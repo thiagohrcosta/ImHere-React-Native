@@ -2,39 +2,35 @@ import { Text, TextInput, TouchableOpacity, View, FlatList, Alert } from 'react-
 
 import { styles } from './styles';
 import { Participant } from '../../components/Participant';
+import React, { useState } from 'react';
 
 export default function Home() {
-  const participants = [
-    "John Doe",
-    "Janne Doe",
-    "John Doe Jr",
-    "Jane Doe Jr",
-    "Tom Brady",
-    "Peyton Manning",
-    "Eli Manning",
-    "Odell Beckham Jr",
-    "Rob Gronkowski",
-    "Patrick Mahomes"
-  ]
-  
-  function handleParticipantAdd() {
-    console.log("CLICKED")
-    if (participants.includes("John Doe")) {
+  const [participants, setParticipants] = useState<string[]>([])
+  const [participantName, setParticipantName] = useState('')
+
+  function handleParticipantAdd(name: string) {
+    if (participants.includes(participantName)) {
       return Alert.alert("Participant already exists.", "The participant you want to add is already on the list.")
     }
+    setParticipants(prevState => [...prevState, participantName])
+    setParticipantName('')
   }
 
+
   function handleParticipantRemove(name: string) {
+    
     Alert.alert("Remove", `Do you want to remove ${name} ?`, [
       {
         text: "Yes",
-        onPress: () => Alert.alert("Removed")
+        onPress: () => setParticipants(prevState => prevState.filter(participant => participant !== name))
       },
       {
         text: "No",
         style: "cancel"
       }
     ])
+
+
     console.log(`${name} was removed.`)
   }
 
@@ -48,6 +44,8 @@ export default function Home() {
           style={styles.input} 
           placeholder="Participant's name"
           placeholderTextColor={'#6B6B6B'}
+          onChangeText={setParticipantName}
+          value={participantName}
         />
 
         <TouchableOpacity 
@@ -62,7 +60,7 @@ export default function Home() {
 
       <FlatList
         data={participants}
-        keyExtractor={item => item}
+        keyExtractor={(item) => item}
         renderItem={( { item }) => (
           <Participant 
             key={item}
